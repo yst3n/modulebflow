@@ -1,0 +1,93 @@
+# Module B: API Quick Steps
+
+## 1. Commands
+
+```bash
+composer create-project laravel/laravel moduleb
+cd moduleb
+php artisan install:api
+php artisan make:model Task -m
+php artisan make:controller Api/TaskController
+php artisan make:controller Api/AuthController
+```
+
+Edit migration, models, controllers and `routes/api.php`.
+
+Then run:
+
+```bash
+php artisan migrate
+php artisan serve
+```
+
+## 2. Test in Postman
+
+Base URL: `http://127.0.0.1:8000`
+
+**For JSON requests:** Body → raw → JSON.
+
+Set header `Accept: application/json`.
+
+| Order | Method | URL | Body |
+|---|---|---|---|
+| 1 | POST | `/api/register` | Name, email, password |
+| 2 | POST | `/api/login` | Email, password |
+| 3 | POST | `/api/tasks` | Task JSON |
+| 4 | GET | `/api/tasks` | None |
+| 5 | GET | `/api/tasks/1` | None |
+| 6 | PUT | `/api/tasks/1` | Task JSON |
+| 7 | DELETE | `/api/tasks/1` | None |
+| 8 | POST | `/api/logout` | None |
+
+**Register body:**
+
+```json
+{
+    "name": "John",
+    "email": "john@example.com",
+    "password": "password123"
+}
+```
+
+**Login body:**
+
+```json
+{
+    "email": "john@example.com",
+    "password": "password123"
+}
+```
+
+**Task body (POST/PUT):**
+
+```json
+{
+    "title": "Study Laravel",
+    "completed": false
+}
+```
+
+## 3. Authentication Token
+
+1. Send POST `/api/login`.
+2. Copy **only the token value** from the JSON response.
+3. Create a new Postman request.
+4. Authorization → Bearer Token → Paste token.
+5. Select GET/POST/PUT/DELETE and enter the URL.
+6. Add JSON body for POST/PUT, then click **Send**.
+
+Use the token for all protected requests, including logout.
+
+**Important:** Don't paste `{"token":"..."}` into the Bearer Token field. Paste only the token itself.
+
+## 4. Debugging
+
+```bash
+php artisan route:list --path=api
+php artisan optimize:clear
+```
+
+- **401:** Missing or incorrect token.
+- **404:** Wrong URL or missing record.
+- **422:** Validation error.
+- **500:** Server/database error.
